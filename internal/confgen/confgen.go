@@ -80,7 +80,10 @@ func (w *WireguardConfigurationGenerator) generateServerConfiguration(networkNam
 		})
 	}
 
-	f, _ := os.Open("server.conf")
+	f, err := os.Create("server.conf")
+	if err != nil {
+		return fmt.Errorf("could not create server conf file: %w", err)
+	}
 	defer f.Close()
 	err = t.Execute(f, c)
 	if err != nil {
@@ -125,7 +128,10 @@ func (w *WireguardConfigurationGenerator) generateClientConfiguration(networkNam
 		})
 	}
 
-	f, _ := os.Open("client.conf")
+	f, err := os.Create("client.conf")
+	if err != nil {
+		return fmt.Errorf("could not create client file: %w", err)
+	}
 	defer f.Close()
 	err = t.Execute(f, c)
 	if err != nil {
