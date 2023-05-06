@@ -43,8 +43,10 @@ func _main() (error, int) {
 
 	fmt.Printf("%#v\n", networkConfig)
 
+	configValidator := &configuration.ConfigurationValidator{}
+
 	for networkName, config := range networkConfig {
-		err := configuration.Validate(config)
+		err := configValidator.Validate(config)
 		if err != nil {
 			return fmt.Errorf("configuration for network %s is invalid: %w", networkName, err), ExitErr
 		}

@@ -6,8 +6,10 @@ import (
 	"github.com/icyflame/wireguard-configuration-generator/internal/utils"
 )
 
+type ConfigurationValidator struct{}
+
 // Validate ...
-func Validate(config NetworkConfig) error {
+func (c *ConfigurationValidator) Validate(config NetworkConfig) error {
 	var addresses []string
 	for _, client := range append(config.Clients, config.Server) {
 		addresses = append(addresses, client.Address)
