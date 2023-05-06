@@ -3,10 +3,10 @@ package keygen
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 
 	"github.com/icyflame/wireguard-configuration-generator/internal/configuration"
 )
@@ -32,19 +32,64 @@ func (k *KeyGenerator) GenerateKeys(networkName string, config configuration.Net
 	return nil
 }
 
+type KeyRetriever struct {
+	Base string
+}
+
+// GetPrivateKey ...
+func (kr *KeyRetriever) GetPrivateKey(networkName, identifier string) (string, error) {
+	directory := getKeyLocation(kr.Base, networkName, identifier)
+	keyLocation := path.Join(directory, PrivateKey)
+	if _, err := os.Stat(keyLocation); err != nil {
+		return "", fmt.Errorf("private key file does not exist: %w", err)
+	}
+
+	key, err := os.ReadFile(keyLocation)
+	if err != nil {
+		return "", fmt.Errorf("could not read the file at %s: %w", keyLocation, err)
+	}
+
+	return strings.Trim(string(key), "\n"), nil
+}
+
+// GetPublicKey ...
+func (kr *KeyRetriever) GetPublicKey(networkName, identifier string) (string, error) {
+	directory := getKeyLocation(kr.Base, networkName, identifier)
+	keyLocation := path.Join(directory, PublicKey)
+	if _, err := os.Stat(keyLocation); err != nil {
+		return "", fmt.Errorf("public key file does not exist: %w", err)
+	}
+
+	key, err := os.ReadFile(keyLocation)
+	if err != nil {
+		return "", fmt.Errorf("could not read the file at %s: %w", keyLocation, err)
+	}
+
+	return strings.Trim(string(key), "\n"), nil
+}
+
+// getKeyLocation ...
+func getKeyLocation(baseDir, networkName, identifier string) string {
+	return path.Join(baseDir, networkName, identifier)
+}
+
 // writeKey ...
 func writeKey(baseDir, networkName string, peer configuration.Peer) error {
-	directory := path.Join(baseDir, networkName, peer.Identifier)
-	keyLocation := path.Join(directory, PrivateKey)
-	if _, err := os.Stat(keyLocation); err == nil {
+	kr := KeyRetriever{
+		Base: baseDir,
+	}
+
+	if _, err := kr.GetPrivateKey(networkName, peer.Identifier); err == nil {
 		return nil
 	}
 
+	directory := getKeyLocation(baseDir, networkName, peer.Identifier)
 	err := os.MkdirAll(directory, 0700)
 	if err != nil {
 		return fmt.Errorf("could not make directory: %w", err)
 	}
 
+	keyLocation := path.Join(directory, PrivateKey)
 	privateKey, err := generatePrivateKey(keyLocation)
 	if err != nil {
 		return fmt.Errorf("could not generate private key for %s > %s > %s: %w", baseDir, networkName, peer.Identifier, err)
@@ -57,7 +102,6 @@ func writeKey(baseDir, networkName string, peer configuration.Peer) error {
 	}
 
 	return nil
-
 }
 
 // generatePrivateKey ...
@@ -72,8 +116,6 @@ func generatePrivateKey(location string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not write private key to file: %w", err)
 	}
-
-	log.Print("written to " + location)
 
 	return privateKey, nil
 }
