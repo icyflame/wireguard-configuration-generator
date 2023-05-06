@@ -16,10 +16,14 @@ const (
 	PublicKey  = "public"
 )
 
+type KeyGenerator struct {
+	Base string
+}
+
 // GenerateKeys ...
-func GenerateKeys(networkName string, config configuration.NetworkConfig, baseDir string) error {
+func (k *KeyGenerator) GenerateKeys(networkName string, config configuration.NetworkConfig) error {
 	for _, client := range append(config.Clients, config.Server) {
-		err := writeKey(baseDir, networkName, client)
+		err := writeKey(k.Base, networkName, client)
 		if err != nil {
 			return fmt.Errorf("could not write keys to filesystem: %w", err)
 		}

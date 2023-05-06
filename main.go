@@ -35,15 +35,15 @@ func _main() (error, int) {
 		return fmt.Errorf("insufficient arguments"), ExitErr
 	}
 
-	log.Print(configurationFile)
 	networkConfig, err := configuration.Read(configurationFile)
 	if err != nil {
 		return fmt.Errorf("could not read config file: %w", err), ExitErr
 	}
 
-	fmt.Printf("%#v\n", networkConfig)
-
 	configValidator := &configuration.ConfigurationValidator{}
+	keyGenerator := &keygen.KeyGenerator{
+		Base: keysBaseDirectory,
+	}
 
 	for networkName, config := range networkConfig {
 		err := configValidator.Validate(config)
@@ -51,7 +51,7 @@ func _main() (error, int) {
 			return fmt.Errorf("configuration for network %s is invalid: %w", networkName, err), ExitErr
 		}
 
-		err = keygen.GenerateKeys(networkName, config, keysBaseDirectory)
+		err = keyGenerator.GenerateKeys(networkName, config)
 		if err != nil {
 			return fmt.Errorf("could not generate all keys for %s: %w", networkName, err), ExitErr
 		}
