@@ -10,6 +10,7 @@ import (
 type Peer struct {
 	Identifier string `json:"identifier"`
 	Address    string `json:"address"`
+	Endpoint   string `json:"endpoint"`
 }
 
 type NetworkConfig struct {

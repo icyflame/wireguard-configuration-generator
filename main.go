@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/icyflame/wireguard-configuration-generator/internal/confgen"
 	"github.com/icyflame/wireguard-configuration-generator/internal/configuration"
 	"github.com/icyflame/wireguard-configuration-generator/internal/keygen"
 )
@@ -44,6 +45,12 @@ func _main() (error, int) {
 	keyGenerator := &keygen.KeyGenerator{
 		Base: keysBaseDirectory,
 	}
+	wgConfigGenerator := &confgen.WireguardConfigurationGenerator{
+		PeerConfigFile: "./template-configurations/peer.conf",
+		KR: &keygen.KeyRetriever{
+			Base: keysBaseDirectory,
+		},
+	}
 
 	for networkName, config := range networkConfig {
 		err := configValidator.Validate(config)
@@ -55,9 +62,12 @@ func _main() (error, int) {
 		if err != nil {
 			return fmt.Errorf("could not generate all keys for %s: %w", networkName, err), ExitErr
 		}
-	}
 
-	fmt.Printf("configuration is valid")
+		err = wgConfigGenerator.Generate(networkName, config)
+		if err != nil {
+			return fmt.Errorf("could not generate all the configuration files for %s: %w", networkName, err), ExitErr
+		}
+	}
 
 	return nil, ExitOK
 }
