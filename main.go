@@ -58,7 +58,8 @@ func _main() (error, int) {
 		KR: &keygen.KeyRetriever{
 			Base: keysBaseDirectory,
 		},
-		Base: confsBaseDirectory,
+		Base:      confsBaseDirectory,
+		DNSServer: dnsServer,
 	}
 
 	for networkName, config := range networkConfig {
