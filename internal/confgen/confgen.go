@@ -15,12 +15,13 @@ type WireguardConfigurationGenerator struct {
 }
 
 type NetworkConfig struct {
-	NetworkName string
-	Mask        string
-	Identifier  string
-	Address     string
-	PrivateKey  string
-	Peers       []PeerConfig
+	NetworkName        string
+	Mask               string
+	Identifier         string
+	Address            string
+	PrivateKey         string
+	PostUpDownRequired bool
+	Peers              []PeerConfig
 }
 
 type PeerConfig struct {
@@ -60,11 +61,12 @@ func (w *WireguardConfigurationGenerator) generateServerConfiguration(networkNam
 		return fmt.Errorf("could not get private key for %s > %s: %w", networkName, config.Server.Identifier, err)
 	}
 	c := NetworkConfig{
-		NetworkName: networkName,
-		Identifier:  config.Server.Identifier,
-		Mask:        "24",
-		Address:     config.Server.Address,
-		PrivateKey:  privKey,
+		NetworkName:        networkName,
+		Identifier:         config.Server.Identifier,
+		Mask:               "24",
+		Address:            config.Server.Address,
+		PostUpDownRequired: true,
+		PrivateKey:         privKey,
 	}
 
 	for _, client := range config.Clients {
