@@ -27,11 +27,13 @@ func main() {
 func _main() (error, int) {
 	var configurationFile string
 	var keysBaseDirectory string
+	var confsBaseDirectory string
 	flag.StringVar(&configurationFile, "configuration-file", "", "configuration file for generating wireguard configurations")
 	flag.StringVar(&keysBaseDirectory, "keys-base-dir", "", "base directory for storing the private and public keys required for wireguard")
+	flag.StringVar(&confsBaseDirectory, "confs-base-dir", "", "base directory for storing the wireguard configurations")
 	flag.Parse()
 
-	if configurationFile == "" || keysBaseDirectory == "" {
+	if configurationFile == "" || keysBaseDirectory == "" || confsBaseDirectory == "" {
 		flag.PrintDefaults()
 		return fmt.Errorf("insufficient arguments"), ExitErr
 	}
@@ -50,6 +52,7 @@ func _main() (error, int) {
 		KR: &keygen.KeyRetriever{
 			Base: keysBaseDirectory,
 		},
+		Base: confsBaseDirectory,
 	}
 
 	for networkName, config := range networkConfig {
