@@ -14,6 +14,7 @@ type WireguardConfigurationGenerator struct {
 	PeerConfigFile string
 	KR             *keygen.KeyRetriever
 	Base           string
+	DNSServer      string
 }
 
 type NetworkConfig struct {
@@ -23,6 +24,7 @@ type NetworkConfig struct {
 	Address            string
 	PrivateKey         string
 	PostUpDownRequired bool
+	DNSServer          string
 	Peers              []PeerConfig
 }
 
@@ -74,6 +76,7 @@ func (w *WireguardConfigurationGenerator) generatePeerConfiguration(networkName 
 		Mask:        "32",
 		Address:     server.Address,
 		PrivateKey:  privKey,
+		DNSServer:   w.DNSServer,
 
 		// If all IPs are being allowed, then this is a client which will tunnel all its traffic
 		// through a server. That client does not need the "PostUp/Down" setup for IP tables.

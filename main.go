@@ -16,6 +16,10 @@ const (
 	ExitErr
 )
 
+const (
+	DefaultDNSServer = "1.1.1.1"
+)
+
 func main() {
 	err, returnCode := _main()
 	if err != nil {
@@ -28,9 +32,11 @@ func _main() (error, int) {
 	var configurationFile string
 	var keysBaseDirectory string
 	var confsBaseDirectory string
+	var dnsServer string
 	flag.StringVar(&configurationFile, "configuration-file", "", "configuration file for generating wireguard configurations")
 	flag.StringVar(&keysBaseDirectory, "keys-base-dir", "", "base directory for storing the private and public keys required for wireguard")
 	flag.StringVar(&confsBaseDirectory, "confs-base-dir", "", "base directory for storing the wireguard configurations")
+	flag.StringVar(&dnsServer, "dns-server", DefaultDNSServer, "DNS server to inject into all configuration files")
 	flag.Parse()
 
 	if configurationFile == "" || keysBaseDirectory == "" || confsBaseDirectory == "" {
