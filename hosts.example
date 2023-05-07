@@ -1,0 +1,3 @@
+[datacenter]
+1.2.3.4 network_name=vpn1 server_identifier=server1
+1.2.3.5 network_name=vpn2 server_identifier=server2

@@ -1,0 +1,60 @@
+#+TITLE: Wireguard Configuration Generator
+
+This is a repository which has a script in Go to generate Wireguard conigurations for multiple VPNs,
+where there is a single server and multiple clients. The generated configurations are compatible
+with =wg-quick= and tunnel all traffic on the clients through the server. The configuration
+generator handles the generation and sharing of public and private keys. It takes as input a single
+JSON configuration file, which allows for the easy management of IP addresses within the various
+tunnels that are setup. In-built validation ensures that you can't re-use the same IP address for 2
+peers in a tunnel and create a problematic setup which doesn't work.
+
+This configuration generator can be used together with playbooks inside the =wireguard-ansible=
+repository.
+
+First, you have to write the JSON configuration which will be used to generate keys and
+configuration files. [[file:input.json.example]] is an example configuration. One thing to note is that
+the identifiers for all the peers must be unique.
+
+Second, you should generate the =wg-quick=-compatible configurations using:
+
+#+begin_src sh
+  $ go run main.go \
+	-configuration-file './config.json' \
+	-keys-base-dir './keys' \
+	-confs-base-dir './configurations' \
+	[-dns-server '8.8.8.8']
+#+end_src
+
+*Note:* Using a custom DNS server is recommended. Using a public DNS server such as 1.1.1.1
+(Cloudflare) or 8.8.8.8 (Google) is possible. You can also use a private DNS server which you might
+be running.[fn:1]
+
+The path to the keys and configurations directories can be pointed to a separate block device. You
+could use [[https://dyne.org/software/tomb/][tomb]] to have a single file which stores everything required for your Wireguard setup and
+move that file around as you would any other file. You can also version control the configurations
+to ensure that you don't end up making some change to the configuration which you can't revert.
+
+Third, you should write the =hosts= file which will be used by =wireguard-ansible=, if you plan to
+use that to set up any of the supported operating systems. You can use the [[file:hosts.example]] as a
+sample. The network names and server identifiers in this file should match those in the JSON
+configuration file.
+
+Fourth, you should run Ansible on a different host to setup the Wireguard servers and place
+configurations in the appropriate place and start the SystemD units that will keep Wireguard
+running. When running =ansible-playbook=, you should pass the base path of the configuration files
+as an "extra variable." The value of the =configurations_base_path= variable should be the absolute
+path of the =./configurations= directory that was passed as the =-confs-base-dir= argument to the
+configuration generator.
+
+#+begin_src sh
+  $ ansible-playbook -i hosts.example -CD bootstrap.yml \
+	--extra-vars 'configurations_base_path=/home/user/configurations'
+#+end_src
+
+* Footnotes
+
+[fn:1] I run a CoreDNS-based DNS server with the [[https://github.com/icyflame/blocker][blocker]] plugin, which blocks most domains which
+serve only advertisements. By combining the adblocking DNS server and Wireguard, I can block ads
+even on mobile data on an iPhone, where addons like uBlock Origin can't be installed. Without
+Wireguard, when using mobile data, it is not possible to specify a DNS server directly (as it is
+possible while using WiFi.)

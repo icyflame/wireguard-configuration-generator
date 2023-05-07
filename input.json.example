@@ -1,0 +1,40 @@
+{
+  "vpn1": {
+    "server": {
+      "identifier": "server1",
+      "address": "10.0.0.1",
+      "endpoint": "1.2.3.4"
+    },
+    "clients": [
+      {
+        "identifier": "client1",
+        "address": "10.0.0.2",
+        "endpoint": "1.2.3.4"
+      },
+      {
+        "identifier": "client2",
+        "address": "10.0.0.3",
+        "endpoint": "1.2.3.4"
+      }
+    ]
+  },
+  "vpn2": {
+    "server": {
+      "identifier": "server2",
+      "address": "10.0.0.1",
+      "endpoint": "1.2.3.4"
+    },
+    "clients": [
+      {
+        "identifier": "client1",
+        "address": "10.0.0.2",
+        "endpoint": "1.2.3.4"
+      },
+      {
+        "identifier": "client2",
+        "address": "10.0.0.3",
+        "endpoint": "1.2.3.4"
+      }
+    ]
+  }
+}
