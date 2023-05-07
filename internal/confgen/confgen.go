@@ -63,7 +63,7 @@ func (w *WireguardConfigurationGenerator) generateServerConfiguration(networkNam
 	c := NetworkConfig{
 		NetworkName:        networkName,
 		Identifier:         config.Server.Identifier,
-		Mask:               "24",
+		Mask:               "32",
 		Address:            config.Server.Address,
 		PostUpDownRequired: true,
 		PrivateKey:         privKey,
