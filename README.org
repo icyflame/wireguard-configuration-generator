@@ -15,6 +15,15 @@ First, you have to write the JSON configuration which will be used to generate k
 configuration files. [[file:input.json.example]] is an example configuration. One thing to note is that
 the identifiers for all the peers must be unique.
 
+This example configuration shows the following VPN setup:
+
+[[file:img/Wireguard-Configuration-Generator-Schematic.png]]
+
+There are 2 networks here. When the client has the green network turned on, all traffic will be
+routed through =server1=, whereas the blue network will route all traffic through =server2=. This
+means that the sites that you visit will see the IP address of =server1= rather than the public IP
+address of =client1=.
+
 Second, you should generate the =wg-quick=-compatible configurations using:
 
 #+begin_src sh
@@ -34,7 +43,7 @@ could use [[https://dyne.org/software/tomb/][tomb]] to have a single file which 
 move that file around as you would any other file. You can also version control the configurations
 to ensure that you don't end up making some change to the configuration which you can't revert.
 
-Third, you should write the =hosts= file which will be used by =wireguard-ansible=, if you plan to
+Third, you should write the =hosts= file which will be used by [[https://github.com/icyflame/wireguard-ansible][=ansible-wireguard=]][fn:2], if you plan to
 use that to set up any of the supported operating systems. You can use the [[file:hosts.example]] as a
 sample. The network names and server identifiers in this file should match those in the JSON
 configuration file.
@@ -52,6 +61,8 @@ configuration generator.
 #+end_src
 
 * Footnotes
+
+[fn:2] This repository is not public on GitHub.
 
 [fn:1] I run a CoreDNS-based DNS server with the [[https://github.com/icyflame/blocker][blocker]] plugin, which blocks most domains which
 serve only advertisements. By combining the adblocking DNS server and Wireguard, I can block ads
