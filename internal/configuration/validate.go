@@ -10,8 +10,24 @@ type ConfigurationValidator struct{}
 
 // Validate ...
 func (c *ConfigurationValidator) Validate(config NetworkConfig) error {
+	switch config.Type {
+	case NetworkConfigType_ServerClient:
+		// pass
+	default:
+		return fmt.Errorf("network configuration type must be non-empty and valid for network")
+	}
+
+	if config.Type == NetworkConfigType_ServerClient && (config.Server.Address == "" || config.Server.Endpoint == "" || config.Server.Identifier == "") {
+		return fmt.Errorf("server-client configuration type must have a server defined with identifier, address, and endpoint")
+	}
+
+	allClients := config.Clients
+	if config.Type == NetworkConfigType_ServerClient {
+		allClients = append(config.Clients, config.Server)
+	}
+
 	var addresses []string
-	for _, client := range append(config.Clients, config.Server) {
+	for _, client := range allClients {
 		addresses = append(addresses, client.Address)
 	}
 
@@ -20,7 +36,7 @@ func (c *ConfigurationValidator) Validate(config NetworkConfig) error {
 	}
 
 	var identifiers []string
-	for _, client := range append(config.Clients, config.Server) {
+	for _, client := range allClients {
 		identifiers = append(identifiers, client.Identifier)
 	}
 

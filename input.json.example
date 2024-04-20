@@ -1,5 +1,6 @@
 {
   "vpn1": {
+    "type": "server-client1",
     "server": {
       "identifier": "server1",
       "address": "10.0.0.1",
@@ -19,6 +20,7 @@
     ]
   },
   "vpn2": {
+    "type": "server-client",
     "server": {
       "identifier": "server2",
       "address": "10.0.0.1",

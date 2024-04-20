@@ -13,9 +13,17 @@ type Peer struct {
 	Endpoint   string `json:"endpoint"`
 }
 
+type NetworkConfigType string
+
+const (
+	NetworkConfigType_Unknown      = "unknown"
+	NetworkConfigType_ServerClient = "server-client"
+)
+
 type NetworkConfig struct {
-	Server  Peer   `json:"server"`
-	Clients []Peer `json:"clients"`
+	Type    NetworkConfigType `json:"type"`
+	Server  Peer              `json:"server"`
+	Clients []Peer            `json:"clients"`
 }
 
 // Read ...
