@@ -37,14 +37,31 @@ type PeerConfig struct {
 
 // Generate ...
 func (w *WireguardConfigurationGenerator) Generate(networkName string, config configuration.NetworkConfig) error {
-	if err := w.generatePeerConfiguration(networkName, config.Server, config.Clients, false); err != nil {
-		return fmt.Errorf("could not generate server configuration in %s: %w", networkName, err)
+	if config.Type == configuration.NetworkConfigType_ServerClient {
+		if err := w.generatePeerConfiguration(networkName, config.Server, config.Clients, false); err != nil {
+			return fmt.Errorf("could not generate server configuration in %s: %w", networkName, err)
+		}
 	}
 
-	for _, client := range config.Clients {
-		if err := w.generatePeerConfiguration(networkName, client, []configuration.Peer{
-			config.Server,
-		}, true); err != nil {
+	for i, client := range config.Clients {
+		var allOtherClients []configuration.Peer
+		switch config.Type {
+		case configuration.NetworkConfigType_FullMesh:
+			for j, client := range config.Clients {
+				if i == j {
+					continue
+				}
+				allOtherClients = append(allOtherClients, client)
+			}
+		case configuration.NetworkConfigType_ServerClient:
+			allOtherClients = []configuration.Peer{
+				config.Server,
+			}
+		}
+
+		// When configuration is server client, client should all server (which is its only peer) to represent any IP address
+		// But when configuration is full mesh, client should allow other clients to represent only their own IP address
+		if err := w.generatePeerConfiguration(networkName, client, allOtherClients, config.Type == configuration.NetworkConfigType_ServerClient); err != nil {
 			return fmt.Errorf("could not generate client configuration for %s > %s: %w", networkName, client.Identifier, err)
 		}
 	}
@@ -55,7 +72,7 @@ func (w *WireguardConfigurationGenerator) Generate(networkName string, config co
 // generatePeerConfiguration ...
 func (w *WireguardConfigurationGenerator) generatePeerConfiguration(networkName string, server configuration.Peer, peers []configuration.Peer, allowAllIPs bool) error {
 	if allowAllIPs && len(peers) > 1 {
-		return fmt.Errorf("can not allow all IPs with multiple peers. that setup does not make sense. (%s > %s)", networkName, server.Identifier)
+		return fmt.Errorf("can not allow all IPs through multiple peers - that setup does not make sense. (%s > %s)", networkName, server.Identifier)
 	}
 
 	configFile, err := os.ReadFile(w.PeerConfigFile)

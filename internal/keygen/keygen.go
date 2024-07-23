@@ -22,7 +22,12 @@ type KeyGenerator struct {
 
 // GenerateKeys ...
 func (k *KeyGenerator) GenerateKeys(networkName string, config configuration.NetworkConfig) error {
-	for _, client := range append(config.Clients, config.Server) {
+	forKeyGen := append(config.Clients, config.Server)
+	if config.Type == configuration.NetworkConfigType_FullMesh {
+		forKeyGen = config.Clients
+	}
+
+	for _, client := range forKeyGen {
 		err := writeKey(k.Base, networkName, client)
 		if err != nil {
 			return fmt.Errorf("could not write keys to filesystem: %w", err)

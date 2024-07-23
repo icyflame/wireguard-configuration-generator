@@ -18,6 +18,7 @@ type NetworkConfigType string
 const (
 	NetworkConfigType_Unknown      = "unknown"
 	NetworkConfigType_ServerClient = "server-client"
+	NetworkConfigType_FullMesh     = "full-mesh"
 )
 
 type NetworkConfig struct {

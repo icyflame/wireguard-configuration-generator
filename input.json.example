@@ -1,6 +1,6 @@
 {
   "vpn1": {
-    "type": "server-client1",
+    "type": "server-client",
     "server": {
       "identifier": "server1",
       "address": "10.0.0.1",
@@ -34,6 +34,27 @@
       },
       {
         "identifier": "client2",
+        "address": "10.0.0.3",
+        "endpoint": "1.2.3.4"
+      }
+    ]
+  },
+  "vpn3": {
+    "type": "full-mesh",
+    "server": {},
+    "clients": [
+      {
+        "identifier": "client1",
+        "address": "10.0.0.1",
+        "endpoint": "1.2.3.4"
+      },
+      {
+        "identifier": "client2",
+        "address": "10.0.0.2",
+        "endpoint": "1.2.3.4"
+      },
+      {
+        "identifier": "client3",
         "address": "10.0.0.3",
         "endpoint": "1.2.3.4"
       }
