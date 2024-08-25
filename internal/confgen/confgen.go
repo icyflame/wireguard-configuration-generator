@@ -97,6 +97,10 @@ func (w *WireguardConfigurationGenerator) generatePeerConfiguration(networkName 
 
 		// If all IPs are being allowed, then this is a client which will tunnel all its traffic
 		// through a server. That client does not need the "PostUp/Down" setup for IP tables.
+		//
+		// TODO: Do we need this block anymore? What exactly does it do? I have started noticing
+		// that configuration QR codes which embed this line are not accepted by the iOS or Android
+		// application anymore.
 		PostUpDownRequired: !allowAllIPs,
 	}
 
