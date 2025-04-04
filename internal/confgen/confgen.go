@@ -117,7 +117,7 @@ func (w *WireguardConfigurationGenerator) generatePeerConfiguration(networkName 
 
 		thisPeer.AllowedIPs = peer.Address + "/32"
 		if allowAllIPs {
-			thisPeer.AllowedIPs = "0.0.0.0/0"
+			thisPeer.AllowedIPs = "0.0.0.0/0, ::/0"
 		}
 
 		c.Peers = append(c.Peers, thisPeer)
