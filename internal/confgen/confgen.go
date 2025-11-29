@@ -59,7 +59,7 @@ func (w *WireguardConfigurationGenerator) Generate(networkName string, config co
 			}
 		}
 
-		// When configuration is server client, client should all server (which is its only peer) to represent any IP address
+		// When configuration is server client, client should allow server (which is its only peer) to represent any IP address
 		// But when configuration is full mesh, client should allow other clients to represent only their own IP address
 		if err := w.generatePeerConfiguration(networkName, client, allOtherClients, config.Type == configuration.NetworkConfigType_ServerClient); err != nil {
 			return fmt.Errorf("could not generate client configuration for %s > %s: %w", networkName, client.Identifier, err)
